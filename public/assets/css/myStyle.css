@@ -1,0 +1,25 @@
+.pagination-custom .pagination .page-item {
+    /* Gaya untuk setiap item halaman */
+    border-color: #191c24;
+}
+
+.pagination-custom .page-link {
+    /* Gaya untuk setiap tautan halaman */
+    background-color: #191c24;
+}
+
+/* Gaya untuk halaman yang aktif */
+.pagination-custom .page-item.active .page-link {
+    /* Gaya untuk tautan halaman yang aktif */
+    background-color: #3c3c3d;
+    border-color: #fff;
+
+}
+
+/* Gaya untuk tautan halaman sebelumnya dan selanjutnya */
+.pagination-custom .page-item span,
+.pagination-custom .page-item a {
+    color: #fff;
+    /* Gaya untuk tautan halaman sebelumnya dan selanjutnya */
+
+}
