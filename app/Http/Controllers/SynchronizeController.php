@@ -151,13 +151,16 @@ class SynchronizeController extends Controller
         try {
 
 
-            // dd(DB::connection('pgsql_self')->select("SELECT nama,alamat FROM tes LIMIT 5"));
-
-            // $batchSize = 2;
 
             // // Hitung jumlah halaman yang diperlukan berdasarkan jumlah total data dan ukuran batch
-            // $totalData = 10;
+            // // $count_data =  DB::connection($source_connection)->select($text_query);
+            // $totalData = 2000000;
+
+            // $batchSize = round(($totalData * env('BATCH_SIZE')) / 100);
+
             // $totalPages = ceil($totalData / $batchSize);
+
+
 
             // // membuat array penampung
             // $result_query = [];
@@ -165,28 +168,28 @@ class SynchronizeController extends Controller
             //     $offset = ($page - 1) * $batchSize;
             //     //ambil data kecil kecil
             //     $data_db = DB::connection('pgsql_self')
-            //         ->select("SELECT nama,alamat FROM tes LIMIT $batchSize OFFSET $offset");
+            //         ->select("SELECT nama,alamat, id as angka FROM tes LIMIT $batchSize OFFSET $offset");
 
             //     array_push($result_query, $data_db);
             // }
-            // foreach (array_chunk($result_query, 1000) as $data_chunk) {
+
+
+            // foreach (array_chunk($result_query, 100) as $data_chunk) {
             //     $insertData = [];
 
             //     foreach ($data_chunk as $item_result) {
             //         $object_properties = get_object_vars((object)$item_result);
 
             //         // Iterasi melalui setiap properti dan mengganti tanda petik dalam nilai properti
-            //         foreach ($object_properties as $key => $value) {
+            //         foreach ($object_properties as $property => $value) {
             //             // menghilangkan tanda karakter tidak dikenal
-            //             $object_properties[$key] = str_replace('?', ' ', mb_convert_encoding((array)$value, "UTF-8"));
+            //             $object_properties[$property] = str_replace('?', ' ', mb_convert_encoding((array)$value, "UTF-8"));
+            //             $insertData = (array)  $object_properties;
+            //             DB::connection('con_target')->table('tes')->insert((array)$object_properties);
             //         }
-
-            //         $insertData = (array) $object_properties;
             //     }
-
-            //     // dd($insertData);
-            //     DB::connection('con_target')->table('tes')->insert($insertData);
             // }
+
 
 
 
@@ -206,12 +209,13 @@ class SynchronizeController extends Controller
                 } else {
 
                     //cek dahulu hasil data yang keluar
-                    $check_data =  DB::connection($data_synchronize->source_connection)->select($data_synchronize->query);
+                    $data_count =  DB::connection($data_synchronize->source_connection)->select($data_synchronize->query);
 
-                    if (count($check_data) <= env('MAX_DATA_SYNC')) {
+                    if (count($data_count) <= env('MAX_DATA_SYNC')) {
                         $synchronize_process_report = $this->synchronize_process_repo->insertSynchronizeProcess($param_start);
                         $this->last_id = $synchronize_process_report->id;
                         SynchronizeJob::dispatch(
+                            count($data_count),
                             $data_synchronize, #data sinkronisasi ini sudah masing2
                             $this->synchronize_process_repo, #data job_logs
                             $this->last_id, #id untuk update status job logs

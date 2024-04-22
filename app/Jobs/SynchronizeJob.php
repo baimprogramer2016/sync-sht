@@ -19,12 +19,14 @@ class SynchronizeJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public $synchronize_repo, $synchronize_process_repo, $last_id;
+    public $synchronize_repo, $synchronize_process_repo, $last_id, $data_count;
     public function __construct(
+        $data_count,
         $synchronize_repo,
         $synchronize_process_repo,
         $last_id,
     ) {
+        $this->data_count = $data_count;
         $this->synchronize_repo = $synchronize_repo;
         $this->synchronize_process_repo = $synchronize_process_repo;
         $this->last_id = $last_id;
@@ -54,68 +56,28 @@ class SynchronizeJob implements ShouldQueue
             }
 
 
-            #VERSI 3. MYSQL, POSTGRESQL diatas 500.000 , SYBASE DAN MSSQL TIDAK BISA dan hanya bisa menggunakan LIMIT
-
-            $batchSize = env('BATCH_SIZE');
-
-            // Hitung jumlah halaman yang diperlukan berdasarkan jumlah total data dan ukuran batch
-            $count_data =  DB::connection($source_connection)->select($text_query);
-            $totalData = count($count_data);
-            $totalPages = ceil($totalData / $batchSize);
-
-            // membuat array penampung
-            $result_query = [];
-            for ($page = 1; $page <= $totalPages; $page++) {
-                $offset = ($page - 1) * $batchSize;
-                //ambil data kecil kecil
-                $data_db = DB::connection($source_connection)
-                    ->select("$text_query_no_limit LIMIT $batchSize OFFSET $offset");
-
-                array_push($result_query, $data_db);
-            }
-
-
-            foreach (array_chunk($result_query, 1000) as $data_chunk) {
-                $insertData = [];
-
-                foreach ($data_chunk as $item_result) {
-                    $object_properties = get_object_vars((object)$item_result);
-
-                    // Iterasi melalui setiap properti dan mengganti tanda petik dalam nilai properti
-                    foreach ($object_properties as $property => $value) {
-                        // menghilangkan tanda karakter tidak dikenal
-                        $object_properties[$property] = str_replace('?', ' ', mb_convert_encoding((array)$value, "UTF-8"));
-                    }
-
-                    $insertData = (array)  $object_properties;
-                    DB::connection($target_connection)->table($target_table)->insert($insertData);
-                }
-            }
-
-
-
             # -----------------------------------------------------------------------------------------------------
 
 
             # VERSI 2. MSSQL ,SYBASE, POSTGRESQL, MYSQL - data dibawah 500.000
-            // $result_query =  DB::connection($source_connection)->select($text_query);
-            // foreach (array_chunk($result_query, 1000) as $chunk) {
-            //     $insertData = [];
+            $result_query =  DB::connection($source_connection)->select($text_query);
+            foreach (array_chunk($result_query, 1000) as $chunk) {
+                $insertData = [];
 
-            //     foreach ($chunk as $item_result) {
-            //         $object_properties = get_object_vars($item_result);
+                foreach ($chunk as $item_result) {
+                    $object_properties = get_object_vars($item_result);
 
-            //         // Iterasi melalui setiap properti dan mengganti tanda petik dalam nilai properti
-            //         foreach ($object_properties as $property => $value) {
-            //             // menghilangkan tanda karakter tidak dikenal
-            //             $object_properties[$property] = str_replace('?', ' ', mb_convert_encoding($value, "UTF-8"));
-            //         }
+                    // Iterasi melalui setiap properti dan mengganti tanda petik dalam nilai properti
+                    foreach ($object_properties as $property => $value) {
+                        // menghilangkan tanda karakter tidak dikenal
+                        $object_properties[$property] = str_replace('?', ' ', mb_convert_encoding($value, "UTF-8"));
+                    }
 
-            //         $insertData[] = (array) $object_properties;
-            //     }
+                    $insertData[] = (array) $object_properties;
+                }
 
-            //     DB::connection($target_connection)->table($target_table)->insert($insertData);
-            // }
+                DB::connection($target_connection)->table($target_table)->insert($insertData);
+            }
             # -----------------------------------------------------------------------------------------------------
 
             # VERSI 1. MSSQL ,SYBASE, POSTGRESQL, MYSQL - OLD data dibawah 500.000

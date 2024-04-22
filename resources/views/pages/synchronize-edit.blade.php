@@ -142,9 +142,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Limit</label>
+                                {{-- <label class="col-sm-3 col-form-label">Limit</label> --}}
                                 <div class="col-sm-9">
-                                    <input type="text" readonly class="form-control text-warning bg-dark"
+                                    <input type="hidden" readonly class="form-control text-warning bg-dark"
                                         name="limit_record" value="{{ old('limit_record',env('MAX_DATA_SYNC')) }}" />
                                 </div>
                             </div>
