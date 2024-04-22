@@ -78,20 +78,20 @@ Route::get('/chunk', function () {
     // });
 
 
-    $batchSize = 100;
+    // $batchSize = 100;
 
-    // Hitung jumlah halaman yang diperlukan berdasarkan jumlah total data dan ukuran batch
-    $totalData = 100000;
-    $totalPages = ceil($totalData / $batchSize);
-    $coll = [];
-    // Looping untuk mendapatkan setiap halaman data
-    for ($page = 1; $page <= $totalPages; $page++) {
-        $offset = ($page - 1) * $batchSize;
+    // // Hitung jumlah halaman yang diperlukan berdasarkan jumlah total data dan ukuran batch
+    // $totalData = 100000;
+    // $totalPages = ceil($totalData / $batchSize);
+    // $coll = [];
+    // // Looping untuk mendapatkan setiap halaman data
+    // for ($page = 1; $page <= $totalPages; $page++) {
+    //     $offset = ($page - 1) * $batchSize;
 
-        // Mengambil data dari tabel 'tes' dengan menggunakan query raw
-        $data = DB::connection('pgsql_self')
-            ->select("SELECT  TOP $batchSize * FROM tes OFFSET $offset");
-        array_push($coll, $data);
-    }
-    return $coll;
+    //     // Mengambil data dari tabel 'tes' dengan menggunakan query raw
+    //     $data = DB::connection('pgsql_self')
+    //         ->select("SELECT  TOP $batchSize * FROM tes OFFSET $offset");
+    //     array_push($coll, $data);
+    // }
+    // return $coll;
 });
