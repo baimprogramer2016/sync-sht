@@ -44,8 +44,8 @@
                                         class="btn btn-sm btn-inverse-{{ ($item_synchronize->target_truncate == 1) ? 'danger' : 'secondary'  }}">Truncate</button>
                                 </td>
                                 <td>
-                                    <button
-                                        class="btn btn-sm btn-inverse-{{ ($item_synchronize->target_truncate == 1) ? 'success' : 'secondary'  }}">Active</button>
+                                    <button class="btn btn-sm btn-inverse-{{ ($item_synchronize->active == " 1")
+                                        ? 'success' : 'secondary' }}">Active</button>
                                 </td>
                                 <td>
                                     <a class="btn btn-sm btn-primary"
