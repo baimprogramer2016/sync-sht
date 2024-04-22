@@ -20,15 +20,15 @@ use Illuminate\Support\Facades\DB;
 |
 */
 
-// Route::get('/create-admin', function () {
-//     User::create([
-//         'name' => "Administrator",
-//         'email' => "administrator@mail.com",
-//         'username' => "admin",
-//         'password' => Hash::make("password1"),
-//         'role' => "admin",
-//     ]);
-// });
+Route::get('/create-admin', function () {
+    User::create([
+        'name' => "Administrator",
+        'email' => "administrator@mail.com",
+        'username' => "admin",
+        'password' => Hash::make("password1"),
+        'role' => "admin",
+    ]);
+});
 
 Route::get('/login', function () {
     return view('pages.login');
